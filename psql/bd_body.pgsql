@@ -48,8 +48,8 @@ begin
     update stavki set closed = true, RESULT = res_, date_end = CURRENT_TIMESTAMP where id = id_;
     select sum(bet) into tsum from history where sid = id_ and prediction = true;
     select sum(bet) into fsum from history where sid = id_ and prediction = false;
-    if tsum is null then
-        update clients as cl set balance = balance + (select bet from history where CID = cl.id and SID = id_);
+    if tsum is null or fsum is null then
+        update clients as cl set balance = balance + (select bet from history where CID = cl.id and SID = id_) where not ((select bet from history where CID = cl.id and SID = id_) is null);
     ELSE
         if res_ then
             update clients as cl set balance = balance + (cast((select bet from history where CID = cl.id and SID = id_) as float)/tsum)*(tsum+fsum) where (select prediction from history where CID = cl.id and SID = id_);

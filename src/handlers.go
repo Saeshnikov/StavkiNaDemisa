@@ -19,7 +19,7 @@ func postBet(c *gin.Context) {
 	}
 	fmt.Printf("code: %s", newBet.Secret_code)
 
-	// place_a_bet(newBet)
+	place_a_bet(newBet)
 
 	c.IndentedJSON(http.StatusCreated, newBet)
 }
@@ -35,12 +35,12 @@ func getUsersBets(c *gin.Context) {
 		return
 	}
 
-	// select_users_bets(uInfo.Secret_code)
+	bets := select_users_bets(uInfo.Secret_code)
 
-	c.IndentedJSON(http.StatusOK, gin.H{"secret_code": uInfo.Secret_code})
+	c.IndentedJSON(http.StatusOK, bets)
 }
 
-//events
+// events
 func postEvent(c *gin.Context) {
 	var newEvent struct {
 		Sname        string `json:"sname"`
@@ -53,7 +53,7 @@ func postEvent(c *gin.Context) {
 		return
 	}
 
-	// insert_event(newEvent.Sname, newEvent.Sdescription)
+	insert_event(newEvent.Sname, newEvent.Sdescription)
 
 	c.IndentedJSON(http.StatusCreated, newEvent)
 }
@@ -70,7 +70,7 @@ func putEvent(c *gin.Context) { //for closing event
 		return
 	}
 
-	// close_event(closure_info.Event_id, closure_info.Result)
+	close_event(closure_info.Event_id, closure_info.Result)
 
 	c.IndentedJSON(http.StatusCreated, closure_info)
 }
@@ -84,13 +84,17 @@ func getEvent(c *gin.Context) { //for closing event
 	if err := c.BindJSON(&format); err != nil {
 		return
 	}
+	if format.Is_open {
+		events := select_open_events()
+		c.IndentedJSON(http.StatusCreated, events)
+	} else {
+		events := select_all_events()
+		c.IndentedJSON(http.StatusCreated, events)
+	}
 
-	// select_events(format.Is_open)
-
-	c.IndentedJSON(http.StatusCreated, format)
 }
 
-//user
+// user
 func getUserInfo(c *gin.Context) {
 	var uInfo struct {
 		Secret_code string `json:"secret_code"`
@@ -101,7 +105,7 @@ func getUserInfo(c *gin.Context) {
 	if err := c.BindJSON(&uInfo); err != nil {
 		return
 	}
-	// select_user_info(uInfo.Secret_code)
 
-	c.IndentedJSON(http.StatusOK, gin.H{"secret_code": uInfo.Secret_code})
+	row := select_user_info(uInfo.Secret_code)
+	c.IndentedJSON(http.StatusOK, row)
 }

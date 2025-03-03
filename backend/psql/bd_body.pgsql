@@ -80,9 +80,9 @@ begin
         update users as cl set balance = balance + (select bet from history where UID = cl.id and EID = id_) where not ((select bet from history where UID = cl.id and EID = id_) is null);
     ELSE
         if res_=0 then
-            update users as cl set balance = balance + (cast((select bet from history where UID = cl.id and EID = id_) as float)/tsum)*(tsum+fsum) where (select RESULT from history where UID = cl.id and EID = id_);
+            update users as cl set balance = balance + (cast((select bet from history where UID = cl.id and EID = id_) as float)/tsum)*(tsum+fsum) where (select RESULT from history where UID = cl.id and EID = id_)=0;
         ELSE
-            update users as cl set balance = balance + (cast((select bet from history where UID = cl.id and EID = id_ ) as float)/fsum)*(tsum+fsum) where not (select RESULT from history where UID = cl.id and EID = id_);
+            update users as cl set balance = balance + (cast((select bet from history where UID = cl.id and EID = id_ ) as float)/fsum)*(tsum+fsum) where (select RESULT from history where UID = cl.id and EID = id_)=1;
     end if;
     end if;
    

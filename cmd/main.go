@@ -1,7 +1,7 @@
 package main
 
 import (
-	"stavki/internal/handlers"
+	"stavki/internal/old/handlers"
 
 	"github.com/gin-gonic/gin"
 )

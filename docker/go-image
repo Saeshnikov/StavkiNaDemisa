@@ -1,0 +1,22 @@
+FROM node:23 AS builder
+RUN npm install -g protoc-gen-js
+RUN npm install -g protoc-gen-grpc-web
+
+FROM ubuntu:22.04
+
+RUN apt update && apt upgrade -y
+RUN apt install -y wget make
+RUN wget https://go.dev/dl/go1.23.3.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.23.3.linux-amd64.tar.gz
+
+ENV PATH=$PATH:/usr/local/go/bin:/root/go/bin
+
+RUN apt install -y protobuf-compiler
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+RUN go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+RUN go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+RUN go install github.com/vektra/mockery/v2@v2.52.4
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+ENV PATH=$PATH:/usr/local/lib/node_modules/protoc-gen-grpc-web/bin
+

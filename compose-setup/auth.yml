@@ -1,0 +1,22 @@
+services:
+  auth: 
+    image: main-image
+    build:
+      context:    ./backend/docker
+      dockerfile: main-image
+    entrypoint: go run cmd/sso/main.go
+    volumes:
+      - "$PWD:$PWD:rw"
+    working_dir: $PWD/backend
+    container_name: auth
+    ports:
+     - 10000:10000
+
+  auth-envoy:
+    container_name: "auth-envoy"
+    image: envoy/auth:latest
+    build:
+      context:    envoy/sso
+    ports:
+      - "8000:8000"
+  

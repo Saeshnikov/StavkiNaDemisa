@@ -1,0 +1,4 @@
+INSERT into users (login,balance,password) values ('egor',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('miha',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('artem',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('demis',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');

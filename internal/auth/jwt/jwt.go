@@ -1,7 +1,6 @@
 package auth_jwt
 
 import (
-	"fmt"
 	"time"
 
 	"stavki/internal/auth/storage"
@@ -17,11 +16,8 @@ func NewToken(user storage.User, duration time.Duration) (string, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["uid"] = user.ID
-	claims["email"] = user.Email
-	fmt.Println(time.Now().Unix())
-	fmt.Println(time.Now().Add(duration).Unix())
+	claims["login"] = user.Login
 	claims["exp"] = time.Now().Add(duration).Unix()
-	claims["role"] = user.IsAdmin
 
 	tokenString, err := token.SignedString([]byte(secret.Secret))
 	if err != nil {

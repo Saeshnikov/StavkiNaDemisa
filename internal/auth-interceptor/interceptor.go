@@ -14,12 +14,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	NotAuthorized = iota
-	User
-	Admin
-)
-
 func AuthInterceptor() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
@@ -31,14 +25,12 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			ctx = metadata.AppendToOutgoingContext(ctx, "role", strconv.Itoa(NotAuthorized))
-			return handler(ctx, req)
+			return nil, status.Error(codes.Unauthenticated, "Ты скипнут по причине гой")
 		}
 
 		values := md["authorization"]
 		if len(values) == 0 {
-			ctx = metadata.AppendToOutgoingContext(ctx, "role", strconv.Itoa(NotAuthorized))
-			return handler(ctx, req)
+			return nil, status.Error(codes.Unauthenticated, "Ты скипнут по причине гой")
 		}
 
 		accessToken := values[0]
@@ -49,8 +41,7 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 		})
 
 		if err != nil {
-			ctx = metadata.AppendToOutgoingContext(ctx, "role", strconv.Itoa(NotAuthorized))
-			return handler(ctx, req)
+			return nil, status.Error(codes.Unauthenticated, "Ты скипнут по причине гой")
 		}
 
 		uid, ok := claims["uid"].(float64)
@@ -58,16 +49,6 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Internal, "uid not found")
 		}
 		md.Append("user_id", strconv.Itoa(int(uid)))
-
-		urole, ok := claims["role"].(bool)
-		if !ok {
-			return nil, status.Error(codes.Internal, "role not found")
-		}
-		role := User
-		if urole {
-			role = Admin
-		}
-		md.Append("role", strconv.Itoa(role))
 
 		newCtx := metadata.NewIncomingContext(ctx, md)
 

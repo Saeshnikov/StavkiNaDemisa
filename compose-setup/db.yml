@@ -9,3 +9,17 @@ services:
     container_name: db
     ports:
       - 5432:5432
+
+  migrations: 
+    container_name: migrations
+    image: go-image
+    build:
+      context:    ../docker
+      dockerfile: go-image
+    entrypoint: bash -c "go run cmd/migrator/main.go --migrations-path=migrations"
+    volumes:
+      - "$PWD:$PWD:rw"
+    working_dir: $PWD
+    depends_on:
+      auth : 
+        condition: service_healthy

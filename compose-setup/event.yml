@@ -1,0 +1,24 @@
+services:
+  event: 
+    image: go-image
+    build:
+      context:    ../docker
+      dockerfile: go-image
+    entrypoint: go run cmd/event/main.go
+    volumes:
+      - "$PWD:$PWD:rw"
+    working_dir: $PWD
+    container_name: event
+    ports:
+     - 10001:10001
+    healthcheck:
+      test: ["CMD", "grpcurl", "-plaintext","localhost:10001", "describe"]
+      interval: 5s
+      retries: 10
+
+  event-envoy:
+    container_name: "event-envoy"
+    image: envoy/event:latest
+    ports:
+      - "8001:8001"
+  

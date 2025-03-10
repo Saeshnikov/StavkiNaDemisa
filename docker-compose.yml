@@ -1,50 +1,8 @@
 include:
-  - compose-setup/auth.yaml
-  - compose-setup/db.yaml
-  - compose-setup/shop.yaml
-
-networks:
-  common-net: {}
-
-services:
-  db:
-    networks:
-    - common-net
-
-  auth: 
-    depends_on:
-      - db
-    networks:
-    - common-net
-
-  shop: 
-    networks:
-      - common-net
-
-  # migrations: 
-  #   container_name: migrations
-  #   image: main-image
-  #   build:
-  #     context:    ./backend/docker
-  #     dockerfile: main-image
-  #   entrypoint: bash -c "go run cmd/migrator/main.go --migrations-path=migrations &&
-  #     go run cmd/migrator/main.go --migrations-path=../frontend/pim-sys/migrations --migrations-table=migrations-test"
-  #   volumes:
-  #     - "$PWD:$PWD:rw"
-  #   working_dir: $PWD/backend
-  #   depends_on:
-  #     shop : 
-  #       condition: service_healthy
-  #   networks:
-  #   - common-net
-
-  sso-envoy:
-    networks:
-      - common-net
-
-  shop-envoy:
-    networks:
-      - common-net
+  - compose-setup/auth.yml
+  - compose-setup/db.yml
+  - compose-setup/event.yml
+  - compose-setup/user.yml
 
   # ui:
   #   container_name: ui

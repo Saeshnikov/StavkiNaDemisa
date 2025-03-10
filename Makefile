@@ -11,7 +11,7 @@ clean-gen:
 generate: clean-gen
 	mkdir -p gen/go
 	mkdir -p client/src/grpc
-	go generate ./proto/...
+	go generate ./api/...
 	# go generate ./internal/...
 	# go generate .
 
@@ -39,7 +39,7 @@ build-envoy: envoy/*
 	@for file in $^ ; do \
                 srvsrv="`echo $$file | cut -f 2 -d '/'`"; \
 				echo envoy/$$srvsrv/main.go;\
-				docker build -t envoy/$$srvsrv -f envoy/Dockerfile envoy/$$srvsrv; \
+				docker build -t envoy/$$srvsrv -f ./envoy/Dockerfile envoy/$$srvsrv; \
     done
 
 .PHONY: gomod

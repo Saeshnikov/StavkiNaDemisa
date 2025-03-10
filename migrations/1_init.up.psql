@@ -1,0 +1,87 @@
+CREATE TYPE event_res AS ENUM ('YES', 'NO', 'DECLINED','UNDEFINED');
+
+CREATE TABLE IF NOT EXISTS USERS (
+  ID SERIAL PRIMARY KEY, 
+  LOGIN varchar(64) NOT NULL UNIQUE,
+  PASSWORD varchar(64) NOT NULL,
+  BALANCE INT
+);
+
+CREATE TABLE IF NOT EXISTS EVENTS (
+  ID SERIAL PRIMARY KEY, 
+  NAME VARCHAR(20) NOT NULL, 
+  DESCRIPTION TEXT,
+  DATE_BEG TIMESTAMP,
+  DATE_END TIMESTAMP,
+  CLOSED BOOLEAN DEFAULT FALSE,
+  RESULT event_res DEFAULT 'UNDEFINED',
+  COEFY REAL default 0,
+  COEFN REAL default 0,
+  AUTHOR INT REFERENCES "users"(id)
+  ON DELETE CASCADE,
+  JUDGE INT REFERENCES "users"(id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS HISTORY (
+  ID SERIAL PRIMARY KEY, 
+  EVENT_ID INT REFERENCES EVENTS (ID) ON DELETE CASCADE,
+  USER_ID INT REFERENCES USERS (ID) ON DELETE CASCADE,
+  PREDICTED_RESULT event_res,
+  BET INT
+);
+
+CREATE OR REPLACE FUNCTION his_upd()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS
+$$
+declare
+    tmpy int;
+    tmpn int;
+BEGIN
+    select sum(BET)  into tmpn from HISTORY where id=new.EVENT_ID and PREDICTED_RESULT='NO';
+    select sum(BET)  into tmpy from HISTORY where id=new.EVENT_ID and PREDICTED_RESULT='YES';
+    if tmpn>0 and tmpy>0 THEN
+        update EVENTS set coefy = 1+(tmpn)/(tmpy), coefn=1+(tmpy)/(tmpn) where id=new.EVENT_ID;
+    end if;
+	RETURN new;
+
+END;
+$$;
+
+CREATE or replace TRIGGER on_history_update
+  after insert
+  ON HISTORY
+  FOR EACH ROW
+  EXECUTE procedure his_upd();
+
+CREATE TABLE IF NOT EXISTS EXCLUDED (
+  ID SERIAL PRIMARY KEY,
+  EVENT_ID INT REFERENCES EVENTS (ID) ON DELETE CASCADE,
+  USER_ID INT REFERENCES USERS (ID) ON DELETE CASCADE
+);
+
+create or replace PROCEDURE place_a_bet(eid_ int,username_ varchar(20),size int,result_ event_res)
+language plpgsql
+as
+$$
+declare
+    uid_ int;
+begin
+    if size <= 0 then
+        raise exception 'lickmaballs';
+    end if;
+    select id into uid_ from users where LOGIN = username_;
+    if (select balance from users where id = uid_) < size THEN
+        raise exception 'not enough balance';
+    end if;
+    perform from history where USER_ID = uid_ and EVENT_ID = eid_;
+    if FOUND THEN
+        raise exception 'bet has been already placed';
+    end if;
+
+    insert into history (EVENT_ID, USER_ID,result,bet) values (eid_,uid_,result_,size);
+    update users set balance = balance - size where id = uid_;
+end;
+$$;

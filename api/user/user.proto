@@ -1,0 +1,25 @@
+// Версия ProtoBuf
+syntax = "proto3";
+
+// Текущий пакет - указывает пространство имен для сервиса и сообщений. Помогает избегать конфликтов имен.
+package user;
+
+// Настройки для генерации Go кода.
+option go_package = "stavki.proto.v1;proto";
+
+service User {
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+}
+
+message UserInfo{
+  int32 id = 1;
+  string login = 2;
+  int32 balance = 3;
+}
+
+
+message ListUsersRequest{}
+
+message ListUsersResponse {
+  repeated UserInfo info = 1;
+}

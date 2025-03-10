@@ -1,0 +1,48 @@
+// Версия ProtoBuf
+syntax = "proto3";
+
+// Текущий пакет - указывает пространство имен для сервиса и сообщений. Помогает избегать конфликтов имен.
+package event;
+
+// Настройки для генерации Go кода.
+option go_package = "stavki.proto.v1;proto";
+
+service Event {
+  rpc ListEvents (ListEventsRequest) returns (ListEventsResponse);
+  rpc NewEvent (NewEventRequest) returns (NewEventResponse);
+}
+
+message NewEventRequest {
+  string name = 1;
+  string description = 2;
+  repeated int32 excluded_users = 3;
+  int32 judge = 4;
+}
+
+message NewEventResponse {}
+
+message EventInfo{
+  int32 event_id = 1;
+  string name = 2;
+  string description = 3;
+  bool closed = 4;
+  EventResult result = 5;
+  float coef_y = 6;
+  float coef_n = 7;
+  repeated int32 excluded_users = 8;
+  int32 judge = 9;
+  int32 author = 10;
+}
+
+enum EventResult{
+  UNDEFINED = 0;
+  YES = 1;
+  NO = 2;
+  DECLINED = 3;
+}
+
+message ListEventsRequest{}
+
+message ListEventsResponse {
+  repeated EventInfo info = 1;
+}

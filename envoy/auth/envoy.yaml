@@ -36,7 +36,7 @@ static_resources:
                             prefix: /
                             grpc:
                           route:
-                            cluster: pim-sys
+                            cluster: stavki
                       cors:
                         allow_origin_string_match:
                           - prefix: "*"
@@ -65,12 +65,12 @@ static_resources:
 
   clusters:
     # https://www.envoyproxy.io/docs/envoy/v1.15.0/api-v3/config/cluster/v3/cluster.proto#config-cluster-v3-cluster
-    - name: pim-sys
+    - name: stavki
       type: LOGICAL_DNS
       connect_timeout: 10s
       lb_policy: round_robin
       load_assignment:
-        cluster_name: pim-sys
+        cluster_name: stavki
         endpoints:
           - lb_endpoints:
               - endpoint:

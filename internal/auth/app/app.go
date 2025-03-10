@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"time"
 
-	auth_interceptor "stavki/internal/auth-interceptor"
 	auth_errors "stavki/internal/auth/errors"
 	auth_jwt "stavki/internal/auth/jwt"
 	auth_service "stavki/internal/auth/service"
@@ -32,16 +31,13 @@ type Auth struct {
 type UserSaver interface {
 	SaveUser(
 		ctx context.Context,
-		email string,
+		login string,
 		passHash []byte,
-		name string,
-		phone string,
 	) (uid int64, err error)
 }
 
 type UserProvider interface {
-	User(ctx context.Context, email string) (storage.User, error)
-	IsAdmin(ctx context.Context, userID int64) (bool, error)
+	User(ctx context.Context, login string) (storage.User, error)
 }
 
 // Login checks if user with given credentials exists in the system and returns access token.
@@ -95,14 +91,12 @@ func (a *Auth) Login(
 
 // RegisterNewUser registers new user in the system and returns user ID.
 // If user with given username already exists, returns error.
-func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string, name string, phone string) (int64, error) {
+func (a *Auth) RegisterNewUser(ctx context.Context, login string, pass string) (int64, error) {
 	const op = "Auth.RegisterNewUser"
 
 	log := a.log.With(
 		slog.String("op", op),
-		slog.String("email", email),
-		slog.String("name", name),
-		slog.String("phone", phone),
+		slog.String("login", login),
 	)
 
 	log.Info("registering user")
@@ -114,7 +108,7 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string, n
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	id, err := a.usrSaver.SaveUser(ctx, email, passHash, name, phone)
+	id, err := a.usrSaver.SaveUser(ctx, login, passHash)
 	if err != nil {
 		log.Error("failed to save user")
 
@@ -122,27 +116,6 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, pass string, n
 	}
 
 	return id, nil
-}
-
-// IsAdmin checks if user is admin.
-func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
-	const op = "Auth.IsAdmin"
-
-	log := a.log.With(
-		slog.String("op", op),
-		slog.Int64("user_id", userID),
-	)
-
-	log.Info("checking if user is admin")
-
-	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
-	if err != nil {
-		return false, fmt.Errorf("%s: %w", op, err)
-	}
-
-	log.Info("checked if user is admin", slog.Bool("is_admin", isAdmin))
-
-	return isAdmin, nil
 }
 
 func New(
@@ -168,7 +141,7 @@ func New(
 		)
 	}
 
-	grpcApp := grpcapp.New(log, registerAuth, grpcPort, auth_interceptor.AuthInterceptor())
+	grpcApp := grpcapp.New(log, registerAuth, grpcPort)
 
 	return &App{
 		GRPCServer: grpcApp,

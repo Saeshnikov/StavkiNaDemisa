@@ -2,9 +2,6 @@ package storage
 
 type User struct {
 	ID       int
-	Name     string
-	Email    string
-	Phone    string
+	Login    string
 	PassHash []byte
-	IsAdmin  bool
 }

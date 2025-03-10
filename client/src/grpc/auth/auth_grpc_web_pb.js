@@ -199,67 +199,6 @@ proto.auth.AuthPromiseClient.prototype.login =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.auth.IsAdminRequest,
- *   !proto.auth.IsAdminResponse>}
- */
-const methodDescriptor_Auth_IsAdmin = new grpc.web.MethodDescriptor(
-  '/auth.Auth/IsAdmin',
-  grpc.web.MethodType.UNARY,
-  proto.auth.IsAdminRequest,
-  proto.auth.IsAdminResponse,
-  /**
-   * @param {!proto.auth.IsAdminRequest} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.auth.IsAdminResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.auth.IsAdminRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.auth.IsAdminResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.auth.IsAdminResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.auth.AuthClient.prototype.isAdmin =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/auth.Auth/IsAdmin',
-      request,
-      metadata || {},
-      methodDescriptor_Auth_IsAdmin,
-      callback);
-};
-
-
-/**
- * @param {!proto.auth.IsAdminRequest} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.auth.IsAdminResponse>}
- *     Promise that resolves to the response
- */
-proto.auth.AuthPromiseClient.prototype.isAdmin =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/auth.Auth/IsAdmin',
-      request,
-      metadata || {},
-      methodDescriptor_Auth_IsAdmin);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
  *   !proto.auth.LogoutRequest,
  *   !proto.auth.LogoutResponse>}
  */

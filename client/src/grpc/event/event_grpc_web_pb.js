@@ -196,5 +196,66 @@ proto.event.EventPromiseClient.prototype.newEvent =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.event.BetRequest,
+ *   !proto.event.BetResponse>}
+ */
+const methodDescriptor_Event_Bet = new grpc.web.MethodDescriptor(
+  '/event.Event/Bet',
+  grpc.web.MethodType.UNARY,
+  proto.event.BetRequest,
+  proto.event.BetResponse,
+  /**
+   * @param {!proto.event.BetRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.event.BetResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.event.BetRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.event.BetResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.event.BetResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.event.EventClient.prototype.bet =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/event.Event/Bet',
+      request,
+      metadata || {},
+      methodDescriptor_Event_Bet,
+      callback);
+};
+
+
+/**
+ * @param {!proto.event.BetRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.event.BetResponse>}
+ *     Promise that resolves to the response
+ */
+proto.event.EventPromiseClient.prototype.bet =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/event.Event/Bet',
+      request,
+      metadata || {},
+      methodDescriptor_Event_Bet);
+};
+
+
 module.exports = proto.event;
 

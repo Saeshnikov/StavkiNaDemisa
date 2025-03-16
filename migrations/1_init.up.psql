@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS USERS (
   ID SERIAL PRIMARY KEY, 
   LOGIN varchar(64) NOT NULL UNIQUE,
   PASSWORD varchar(64) NOT NULL,
-  BALANCE INT
+  BALANCE int
 );
 
 CREATE TABLE IF NOT EXISTS EVENTS (
@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS EVENTS (
   DATE_END TIMESTAMP,
   CLOSED BOOLEAN DEFAULT FALSE,
   RESULT event_res DEFAULT 'UNDEFINED',
-  COEFY REAL default 0,
-  COEFN REAL default 0,
+  COEFY float default 0,
+  COEFN float default 0,
   AUTHOR INT REFERENCES "users"(id)
   ON DELETE CASCADE,
   JUDGE INT REFERENCES "users"(id)
@@ -28,7 +28,13 @@ CREATE TABLE IF NOT EXISTS HISTORY (
   EVENT_ID INT REFERENCES EVENTS (ID) ON DELETE CASCADE,
   USER_ID INT REFERENCES USERS (ID) ON DELETE CASCADE,
   PREDICTED_RESULT event_res,
-  BET INT
+  BET int
+);
+
+CREATE TABLE IF NOT EXISTS EXCLUDED (
+  ID SERIAL PRIMARY KEY,
+  EVENT_ID INT REFERENCES EVENTS (ID) ON DELETE CASCADE,
+  USER_ID INT REFERENCES USERS (ID) ON DELETE CASCADE
 );
 
 CREATE OR REPLACE FUNCTION his_upd()
@@ -40,10 +46,10 @@ declare
     tmpy int;
     tmpn int;
 BEGIN
-    select sum(BET)  into tmpn from HISTORY where id=new.EVENT_ID and PREDICTED_RESULT='NO';
-    select sum(BET)  into tmpy from HISTORY where id=new.EVENT_ID and PREDICTED_RESULT='YES';
+    select sum(BET)  into tmpn from HISTORY where EVENT_ID=new.EVENT_ID and PREDICTED_RESULT='NO';
+    select sum(BET)  into tmpy from HISTORY where EVENT_ID=new.EVENT_ID and PREDICTED_RESULT='YES';
     if tmpn>0 and tmpy>0 THEN
-        update EVENTS set coefy = 1+(tmpn)/(tmpy), coefn=1+(tmpy)/(tmpn) where id=new.EVENT_ID;
+        update EVENTS set coefy = 1+(cast((tmpn) as float))/(tmpy), coefn=1+(cast((tmpy) as float))/(tmpn) where id=new.EVENT_ID;
     end if;
 	RETURN new;
 
@@ -56,32 +62,68 @@ CREATE or replace TRIGGER on_history_update
   FOR EACH ROW
   EXECUTE procedure his_upd();
 
-CREATE TABLE IF NOT EXISTS EXCLUDED (
-  ID SERIAL PRIMARY KEY,
-  EVENT_ID INT REFERENCES EVENTS (ID) ON DELETE CASCADE,
-  USER_ID INT REFERENCES USERS (ID) ON DELETE CASCADE
-);
-
-create or replace PROCEDURE place_a_bet(eid_ int,username_ varchar(20),size int,result_ event_res)
+create or replace PROCEDURE place_a_bet(eid_ int,user_id_ int,size int,result_ event_res)
 language plpgsql
 as
 $$
-declare
-    uid_ int;
 begin
     if size <= 0 then
         raise exception 'lickmaballs';
     end if;
-    select id into uid_ from users where LOGIN = username_;
-    if (select balance from users where id = uid_) < size THEN
+    if (select balance from users where id = user_id_) < size THEN
         raise exception 'not enough balance';
     end if;
-    perform from history where USER_ID = uid_ and EVENT_ID = eid_;
+    perform from history where USER_ID = user_id_ and EVENT_ID = eid_;
     if FOUND THEN
         raise exception 'bet has been already placed';
     end if;
 
-    insert into history (EVENT_ID, USER_ID,result,bet) values (eid_,uid_,result_,size);
-    update users set balance = balance - size where id = uid_;
+    insert into history (EVENT_ID, USER_ID,PREDICTED_RESULT,bet) values (eid_,user_id_,result_,size);
+    update users set balance = balance - size where id = user_id_;
+end;
+$$;
+
+--функция на закрытие ставки(распределение баланса)
+create or replace PROCEDURE close_event(id_ int,res_ event_res)
+language plpgsql
+as
+$$
+declare
+    tsum int;
+    fsum int;
+    part_koef real;
+    koef REAL;
+
+
+begin
+    if (select closed from EVENTS where id = id_) then
+        raise exception 'already closed';
+    end if;
+
+    update EVENTS set closed = true, RESULT = res_, date_end = CURRENT_TIMESTAMP where id = id_;
+    select sum(bet) into tsum from history where EVENT_ID = id_ and PREDICTED_RESULT = 'YES';
+    select sum(bet) into fsum from history where EVENT_ID = id_ and PREDICTED_RESULT = 'NO';
+    if tsum is null or fsum is null or res_='DECLINED' then
+        update users as cl set balance = balance + (select bet from history where USER_ID = cl.id and EVENT_ID = id_) where not ((select bet from history where USER_ID = cl.id and EVENT_ID = id_) is null);
+    ELSE
+        
+        if res_='YES' then
+            update users as cl 
+              set balance = balance + (select div(sum(mod(bet*(tsum+fsum), tsum)),tsum) from history where PREDICTED_RESULT='YES' and EVENT_ID = id_)
+                where (select JUDGE from events where id = id_)=cl.id;
+            update users as cl 
+              set balance = balance + (div((select bet from history where USER_ID = cl.id and EVENT_ID = id_)*(tsum+fsum),tsum)) 
+                where (select PREDICTED_RESULT from history where USER_ID = cl.id and EVENT_ID = id_)='YES';
+        ELSE
+            update users as cl 
+              set balance = balance + (select div(sum(mod(bet*(tsum+fsum), fsum)),fsum) from history where PREDICTED_RESULT='NO' and EVENT_ID = id_)
+                where (select JUDGE from events where id = id_)=cl.id;
+            update users as cl 
+              set balance = balance + (div((select bet from history where USER_ID = cl.id and EVENT_ID = id_)*(tsum+fsum),fsum)) 
+                where (select PREDICTED_RESULT from history where USER_ID = cl.id and EVENT_ID = id_)='NO';
+    end if;
+    end if;
+   
+    
 end;
 $$;

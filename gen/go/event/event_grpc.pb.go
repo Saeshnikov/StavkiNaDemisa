@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Event_ListEvents_FullMethodName = "/event.Event/ListEvents"
 	Event_NewEvent_FullMethodName   = "/event.Event/NewEvent"
+	Event_Bet_FullMethodName        = "/event.Event/Bet"
 )
 
 // EventClient is the client API for Event service.
@@ -33,6 +34,7 @@ const (
 type EventClient interface {
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsResponse, error)
 	NewEvent(ctx context.Context, in *NewEventRequest, opts ...grpc.CallOption) (*NewEventResponse, error)
+	Bet(ctx context.Context, in *BetRequest, opts ...grpc.CallOption) (*BetResponse, error)
 }
 
 type eventClient struct {
@@ -63,12 +65,23 @@ func (c *eventClient) NewEvent(ctx context.Context, in *NewEventRequest, opts ..
 	return out, nil
 }
 
+func (c *eventClient) Bet(ctx context.Context, in *BetRequest, opts ...grpc.CallOption) (*BetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BetResponse)
+	err := c.cc.Invoke(ctx, Event_Bet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServer is the server API for Event service.
 // All implementations must embed UnimplementedEventServer
 // for forward compatibility.
 type EventServer interface {
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error)
 	NewEvent(context.Context, *NewEventRequest) (*NewEventResponse, error)
+	Bet(context.Context, *BetRequest) (*BetResponse, error)
 	mustEmbedUnimplementedEventServer()
 }
 
@@ -84,6 +97,9 @@ func (UnimplementedEventServer) ListEvents(context.Context, *ListEventsRequest) 
 }
 func (UnimplementedEventServer) NewEvent(context.Context, *NewEventRequest) (*NewEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewEvent not implemented")
+}
+func (UnimplementedEventServer) Bet(context.Context, *BetRequest) (*BetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bet not implemented")
 }
 func (UnimplementedEventServer) mustEmbedUnimplementedEventServer() {}
 func (UnimplementedEventServer) testEmbeddedByValue()               {}
@@ -142,6 +158,24 @@ func _Event_NewEvent_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Event_Bet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServer).Bet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Event_Bet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServer).Bet(ctx, req.(*BetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Event_ServiceDesc is the grpc.ServiceDesc for Event service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +190,10 @@ var Event_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewEvent",
 			Handler:    _Event_NewEvent_Handler,
+		},
+		{
+			MethodName: "Bet",
+			Handler:    _Event_Bet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

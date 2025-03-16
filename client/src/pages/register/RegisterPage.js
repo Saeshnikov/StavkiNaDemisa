@@ -2,6 +2,9 @@ import React from "react";
 import LoginForm from "./LoginForm";
 import { AuthClient } from "../../grpc/auth/auth_grpc_web_pb";
 import "./App.css";
+import {
+  Divider,
+} from "@mui/material";
 
 const authClient = new AuthClient("http://localhost:8000");
 

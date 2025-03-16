@@ -8,6 +8,9 @@ import Alert from "@mui/material/Alert";
 import { styled } from "@mui/material/styles";
 import { LoginRequest } from "../../grpc/auth/auth_pb";
 import { useNavigate } from "react-router-dom";
+import {
+  Divider,
+} from "@mui/material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -21,6 +24,28 @@ const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[3],
   backgroundColor: theme.palette.background.paper,
 }));
+
+const FormContainer = styled(Box)({
+  position: "relative",
+  maxWidth: 400,
+  margin: "0 auto",
+  display: "flex",
+  justifyContent: "center",
+  "&::before, &::after": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: "2px",
+    backgroundColor: "white",
+  },
+  "&::before": {
+    left: -15,
+  },
+  "&::after": {
+    right: -15,
+  },
+});
 
 const LoginForm = ({ authClient }) => {
   const [formData, setFormData] = React.useState({
@@ -69,47 +94,122 @@ const LoginForm = ({ authClient }) => {
   };
 
   return (
+    <FormContainer>
+      
     <StyledBox>
-      <h1>Stavki Na Demisa</h1>
-      <Typography variant="h5" gutterBottom>
-        Авторизация
+          {/* Заголовок системы */}
+          <img 
+              src="/Logo_black.png" 
+              style={{ 
+                width: 200,
+                height: 200,
+                
+              }}
+            />
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          fontWeight: 800, 
+          mb: 4,
+          color: 'black',
+          letterSpacing: '-0.5px'
+        }}
+      >
+        Stavki Na Demisa
       </Typography>
-      <Grid container spacing={2}>
+
+      {/* Поля формы */}
+      <Grid container spacing={3} sx={{ width: '100%' }}>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            required
-            label="Login"
+            label="Логин"
+            variant="outlined"
             name="login"
             value={formData.login}
             onChange={handleInputChange}
-            helperText=""
+            sx={{ 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '8px',
+                '& fieldset': { borderColor: 'black' },
+              },
+              '& .MuiInputLabel-root': { color: 'black' }
+            }}
+            InputProps={{
+              style: { color: 'black' }
+            }}
           />
         </Grid>
+        
         <Grid item xs={12}>
           <TextField
             fullWidth
-            required
             label="Пароль"
-            name="password"
             type="password"
+            variant="outlined"
+            name="password"
             value={formData.password}
             onChange={handleInputChange}
-            helperText=""
+            sx={{ 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '8px',
+                '& fieldset': { borderColor: 'black' },
+              },
+              '& .MuiInputLabel-root': { color: 'black' }
+            }}
+            InputProps={{
+              style: { color: 'black' }
+            }}
           />
         </Grid>
       </Grid>
+
+      {/* Блок ошибок */}
       {serverError && (
-        <Box sx={{ mt: 2, width: "100%" }}>
-          <Alert severity="error">{serverError}</Alert>
-        </Box>
+        <Alert 
+          severity="error" 
+          sx={{ 
+            width: '100%', 
+            mt: 3,
+            borderRadius: '8px',
+            bgcolor: '#ffebee',
+            '& .MuiAlert-icon': { color: 'black' }
+          }}
+        >
+          <Typography color="black">{serverError}</Typography>
+        </Alert>
       )}
-      <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-        <Button variant="contained" onClick={login}>
-          Войти
-        </Button>
+
+      {/* Кнопка входа */}
+      <Button
+        fullWidth
+        variant="contained"
+        size="large"
+        onClick={login}
+        sx={{ 
+          mt: 4, 
+          py: 1.5,
+          borderRadius: '8px',
+          fontSize: '1rem',
+          textTransform: 'none',
+          backgroundColor: 'black',
+          '&:hover': { backgroundColor: '#333' }
+        }}
+      >
+        <Typography style={{ color: 'white' }}>Войти в систему</Typography>
+      </Button>
+
+      {/* Футер */}
+      <Box sx={{ 
+        mt: 6,
+        textAlign: 'center',
+      }}>
+        <Typography variant="caption" sx={{ color: 'black' }}>
+          © {new Date().getFullYear()} Brigada, Inc.
+        </Typography>
       </Box>
     </StyledBox>
+    </FormContainer>
   );
 };
 

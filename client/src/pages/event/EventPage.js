@@ -91,36 +91,31 @@ const EventPage = () => {
 
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState(false);
-  const [openUsers, setOpenUsers] = React.useState(true);
+  const [openUsers, setOpenUsers] = React.useState(false);
   const [openUsersList, setOpenUsersList] = useState(false);
 
   const ButtonList = () => {
     return (
     <List>
-      <ListItem  disablePadding sx={{ display: 'block' }}>
-        <ListItemButton>
-          <ListItemIcon>
-            <BadgeIcon />
+      <Divider sx={{borderColor:"white"}} variant={'middle'}/>
+      <ListItem  disablePadding sx={{ display: 'block',backgroundColor:'black' }}>
+        <ListItemButton >
+          <ListItemIcon >
+            <BadgeIcon htmlColor="#FFFFFF" />
           </ListItemIcon>
           <ListItemText primary={'user info'}/>
         </ListItemButton>
       </ListItem>
-      <ListItem  disablePadding sx={{ display: 'block' }}>
+      <Divider sx={{borderColor:"white"}} variant={'middle'}/>
+      <ListItem  disablePadding sx={{ display: 'block',backgroundColor:'black' }}>
         <ListItemButton onClick={() => setOpenUsersList(true)}>
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
+          <ListItemIcon color={'white'}>
+            <PeopleIcon  htmlColor="#FFFFFF" />
+          </ListItemIcon >
           <ListItemText primary={'users list'}/>
         </ListItemButton>
       </ListItem>
-      <ListItem  disablePadding sx={{ display: 'block' }}>
-        <ListItemButton>
-          <ListItemIcon>
-            <AddIcon />
-          </ListItemIcon>
-          <ListItemText primary={'create event'}/>
-        </ListItemButton>
-      </ListItem>
+      <Divider sx={{borderColor:"white"}} variant={'middle'}/>
     </List>
   
     )
@@ -149,13 +144,25 @@ const EventPage = () => {
   };
 
   return (
-    <div>
+    <div >
       <StyledPage>
-        <MuiAppBar position="fixed" open={openUsers}>
-          <Toolbar>
-            <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-              Stavki Na Demisa
+
+                    <CreateEventForm open={newEvent} onClose={() => {setNewEvent(false);fetchEvents();}}/>
+        <MuiAppBar position="fixed" open={openUsers} sx={{backgroundColor:'black'}}>
+          <Toolbar >
+          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
+          <img 
+              src="/Logo_white.png" 
+              alt="Описание изображения"
+              style={{ 
+                width: 80,
+                height: 80,
+                
+              }}
+              noWrap sx={{ flexGrow: 1 }}
+            />
             </Typography>
+            
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -169,45 +176,57 @@ const EventPage = () => {
         </MuiAppBar>
 
           <DrawerHeader />
-          <Typography variant="h6" gutterBottom>
+          <Typography 
+            variant="h6" 
+            gutterBottom
+            sx={{ 
+              textAlign: 'center',
+              width: '100%',
+              marginTop: '20px',
+            }}
+          >
             События
           </Typography>
-          <Divider sx={{ marginY: 3 }} />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() =>setNewEvent(true)}
-              sx={{ alignSelf: "flex-start" }}
-            >
-              Создать событие
-            </Button>
-            <CreateEventForm open={newEvent} onClose={() => {setNewEvent(false);fetchEvents();}} />
-          <Divider sx={{ marginY: 3 }} />
-          <EventsList events={events} setEvents={(e) => setEvents(e)}/>
+          <Divider 
+            sx={{ 
+              marginY: 3,
+              borderBottomWidth: 2, // Увеличение толщины линии
+              width: '60%',        // Уменьшение длины до 40% от ширины контейнера
+              mx: 'auto',           // Автоматические отступы по бокам для центрирования
+              color: 'rgba(1, 1, 1, 1)' 
+            }} 
+            variant="middle"
+          />
+          <EventsList events={events} setEvents={(e) => setEvents(e)} onClick={() => setNewEvent(true)} fetch={fetchEvents}/>
           <UsersList open={openUsersList} onClose={() => setOpenUsersList(false)}/>
 
         <Drawer
           sx={{
             flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              backgroundColor: '#000000', // Чёрный фон
+              color: '#ffffff', // Белый текст
+              borderRight: '1px solid rgba(255,255,255,0.12)' // Граница
+            }
           }}
           variant="persistent"
           anchor="right"
           open={openUsers}
         >
-          <Box sx={{height: '10vh', width: '100%'}}>
+          <Box sx={{height: '10vh', width: '100%', backgroundColor:'black', color:'white'}}>
           <DrawerHeader>
-            <IconButton onClick={() => setOpenUsers(false)}>
+            <IconButton onClick={() => setOpenUsers(false)} color={'inherit'}>
               {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </DrawerHeader>
-          <Divider/>
-          </Box>
           <ButtonList/>
+          </Box>
+          
           
         </Drawer>
           
       </StyledPage>
-      <Typography variant="body2" color="textSecondary">
+      <Typography variant="body2" color="black">
           (c) Brigada, Inc
       </Typography>
 

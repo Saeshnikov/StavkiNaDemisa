@@ -6,11 +6,19 @@ body {
 .app-container {
   display: flex;
   height: 100vh;
+  background-color: #000000; /* Синий фон */
+}
+
+.color-choice{
+  background-color: #000000; /* Синий фон */
+  color: white;
+  display: flex;
+  height: 100vh;
 }
 
 .left-section {
   flex: 1;
-  background-color: #2f2dff; /* Синий фон */
+  background-color: #000000; /* Синий фон */
   color: white;
   padding: 40px;
   display: flex;

@@ -23,6 +23,17 @@ type User interface {
 		[]*proto.UserInfo,
 		error,
 	)
+	GetUser(
+		ctx context.Context,
+	) (
+		*proto.UserInfo,
+		error,
+	)
+	AlterUser(
+		ctx context.Context,
+		login string,
+		password string,
+	) error
 }
 
 func Register(gRPCServer *grpc.Server, user User) {
@@ -39,4 +50,28 @@ func (s *ServerAPI) ListUsers(
 	}
 
 	return &proto.ListUsersResponse{Info: usersInfo}, nil
+}
+
+func (s *ServerAPI) GetUser(
+	ctx context.Context,
+	in *proto.GetUserRequest,
+) (*proto.GetUserResponse, error) {
+	userInfo, err := s.user.GetUser(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Errorf("failed to get user: %w", err).Error())
+	}
+
+	return &proto.GetUserResponse{Info: userInfo}, nil
+}
+
+func (s *ServerAPI) AlterUser(
+	ctx context.Context,
+	in *proto.AlterUserRequest,
+) (*proto.AlterUserResponse, error) {
+	err := s.user.AlterUser(ctx, in.Login, in.Password)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Errorf("failed to alter user: %w", err).Error())
+	}
+
+	return &proto.AlterUserResponse{}, nil
 }

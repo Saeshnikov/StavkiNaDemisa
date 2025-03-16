@@ -9,6 +9,8 @@ option go_package = "stavki.proto.v1;proto";
 
 service User {
   rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+  rpc AlterUser (AlterUserRequest) returns (AlterUserResponse);
 }
 
 message UserInfo{
@@ -23,3 +25,16 @@ message ListUsersRequest{}
 message ListUsersResponse {
   repeated UserInfo info = 1;
 }
+
+message GetUserRequest{}
+
+message GetUserResponse {
+  UserInfo info = 1;
+}
+
+message AlterUserRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message AlterUserResponse{}

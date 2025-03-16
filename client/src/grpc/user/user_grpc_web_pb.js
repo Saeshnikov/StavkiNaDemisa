@@ -135,5 +135,127 @@ proto.user.UserPromiseClient.prototype.listUsers =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.user.GetUserRequest,
+ *   !proto.user.GetUserResponse>}
+ */
+const methodDescriptor_User_GetUser = new grpc.web.MethodDescriptor(
+  '/user.User/GetUser',
+  grpc.web.MethodType.UNARY,
+  proto.user.GetUserRequest,
+  proto.user.GetUserResponse,
+  /**
+   * @param {!proto.user.GetUserRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.user.GetUserResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.user.GetUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.user.GetUserResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.user.GetUserResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.user.UserClient.prototype.getUser =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/user.User/GetUser',
+      request,
+      metadata || {},
+      methodDescriptor_User_GetUser,
+      callback);
+};
+
+
+/**
+ * @param {!proto.user.GetUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.user.GetUserResponse>}
+ *     Promise that resolves to the response
+ */
+proto.user.UserPromiseClient.prototype.getUser =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/user.User/GetUser',
+      request,
+      metadata || {},
+      methodDescriptor_User_GetUser);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.user.AlterUserRequest,
+ *   !proto.user.AlterUserResponse>}
+ */
+const methodDescriptor_User_AlterUser = new grpc.web.MethodDescriptor(
+  '/user.User/AlterUser',
+  grpc.web.MethodType.UNARY,
+  proto.user.AlterUserRequest,
+  proto.user.AlterUserResponse,
+  /**
+   * @param {!proto.user.AlterUserRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.user.AlterUserResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.user.AlterUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.user.AlterUserResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.user.AlterUserResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.user.UserClient.prototype.alterUser =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/user.User/AlterUser',
+      request,
+      metadata || {},
+      methodDescriptor_User_AlterUser,
+      callback);
+};
+
+
+/**
+ * @param {!proto.user.AlterUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.user.AlterUserResponse>}
+ *     Promise that resolves to the response
+ */
+proto.user.UserPromiseClient.prototype.alterUser =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/user.User/AlterUser',
+      request,
+      metadata || {},
+      methodDescriptor_User_AlterUser);
+};
+
+
 module.exports = proto.user;
 

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { EventClient } from "../../grpc/event/event_grpc_web_pb"; // Клиент gRPC
-import { 
+import {
   ListEventsRequest, 
   NewEventRequest, 
   EventInfo 
 } from "../../grpc/event/event_pb"; // Сгенерированные сообщения
+import { UserClient } from "../../grpc/user/user_grpc_web_pb"; // Клиент gRPC
+import {
+  GetUserRequest, 
+} from "../../grpc/user/user_pb"; // Сгенерированные сообщения
 import { useNavigate } from "react-router-dom";
 import { IconButton } from '@mui/material';
 import {
@@ -87,7 +91,9 @@ const AppBar = styled(MuiAppBar, {
 
 const EventPage = () => {
   const client = new EventClient("http://localhost:8001"); // URL gRPC-сервера
+  const userClient = new UserClient("http://localhost:8002");
   const theme = useTheme();
+  const [userInfo, setUserInfo] = useState([]);
 
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState(false);
@@ -141,6 +147,14 @@ const EventPage = () => {
       }
       setEvents(response.getInfoList().map((event) => event.toObject()));
     });
+    const getUserRequest = new GetUserRequest();
+      userClient.getUser(request, metadata, (err, response) => {
+        if (err) {
+          console.error("Ошибка загрузки списка пользователей:", err.message);
+          return;
+        }
+        setUserInfo(response.getInfo().toObject());
+      });
   };
 
   return (
@@ -162,7 +176,7 @@ const EventPage = () => {
               noWrap sx={{ flexGrow: 1 }}
             />
             </Typography>
-            
+            {userInfo.name}
             <IconButton
               color="inherit"
               aria-label="open drawer"

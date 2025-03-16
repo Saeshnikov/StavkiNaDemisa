@@ -33,6 +33,13 @@ type Storage interface {
 		[]*proto.EventInfo,
 		error,
 	)
+	Bet(
+		ctx context.Context,
+		userId int,
+		size int32,
+		result string,
+		eventId int32,
+	) error
 }
 
 type Event struct {
@@ -81,6 +88,23 @@ func (event *Event) ListEvents(
 	}
 
 	return event.EventStorage.ListEvents(ctx, userId)
+}
+
+func (event *Event) Bet(
+	ctx context.Context,
+	content *proto.BetRequest,
+) error {
+	user_id, err := auth_interceptor.GetFromContext(ctx, "user_id")
+	if err != nil {
+		return fmt.Errorf("%s: %v", "getting user_id from context: ", err)
+	}
+
+	userId, err := strconv.Atoi(user_id)
+	if err != nil {
+		return fmt.Errorf("%s: %v", "converting uid to int: ", err)
+	}
+
+	return event.EventStorage.Bet(ctx, userId, int32(content.Size), content.Result.String(), content.EventId)
 }
 
 func New(

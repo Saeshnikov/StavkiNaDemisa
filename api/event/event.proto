@@ -10,6 +10,7 @@ option go_package = "stavki.proto.v1;proto";
 service Event {
   rpc ListEvents (ListEventsRequest) returns (ListEventsResponse);
   rpc NewEvent (NewEventRequest) returns (NewEventResponse);
+  rpc Bet (BetRequest) returns (BetResponse);
 }
 
 message NewEventRequest {
@@ -46,3 +47,11 @@ message ListEventsRequest{}
 message ListEventsResponse {
   repeated EventInfo info = 1;
 }
+
+message BetRequest {
+  int32 event_id = 1;
+  double size = 2;
+  EventResult result = 3;
+}
+
+message BetResponse {}

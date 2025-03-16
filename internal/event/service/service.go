@@ -27,6 +27,10 @@ type Event interface {
 		[]*proto.EventInfo,
 		error,
 	)
+	Bet(
+		ctx context.Context,
+		content *proto.BetRequest,
+	) error
 }
 
 func Register(gRPCServer *grpc.Server, event Event) {
@@ -62,4 +66,16 @@ func (s *ServerAPI) ListEvents(
 	}
 
 	return &proto.ListEventsResponse{Info: eventsInfo}, nil
+}
+
+func (s *ServerAPI) Bet(
+	ctx context.Context,
+	in *proto.BetRequest,
+) (*proto.BetResponse, error) {
+	err := s.event.Bet(ctx, in)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Errorf("failed to make a bet: %w", err).Error())
+	}
+
+	return &proto.BetResponse{}, nil
 }

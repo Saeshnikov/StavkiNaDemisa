@@ -79,7 +79,6 @@ const UsersList = (props) => {
 
   return (
     <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
-      <DialogTitle id="simple-dialog-title">Users list</DialogTitle>
         <Box sx={{height: '90vh', width: '100%', maxWidth: columns.reduce((acc, column) => acc + column.width, 0)}}>
       <DataGrid
         rows={users}

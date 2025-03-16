@@ -124,3 +124,66 @@ func (s *Storage) ListEvents(ctx context.Context, userId int) (
 
 	return res, nil
 }
+
+func (s *Storage) Bet(
+	ctx context.Context,
+	userId int,
+	size int32,
+	result string,
+	eventId int32,
+) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return fmt.Errorf("%s: %w", "begining transaction: ", err)
+	}
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	checkJudge, err := s.db.Prepare("SELECT judge FROM events WHERE id = $1")
+	if err != nil {
+		return fmt.Errorf("%s: %w", "creating checkJudge query: ", err)
+	}
+	defer checkJudge.Close()
+
+	var judgeId int
+
+	err = checkJudge.QueryRowContext(ctx, eventId).Scan(&judgeId)
+	if err != nil {
+		return fmt.Errorf("%s: %w", "executing checkJudge query: ", err)
+	}
+
+	if judgeId == userId {
+		closeEvent, err := s.db.Prepare("call close_event($1,$2)")
+		if err != nil {
+			return fmt.Errorf("%s: %w", "creating closeEvent query: ", err)
+		}
+		defer closeEvent.Close()
+
+		err = closeEvent.QueryRowContext(ctx, eventId, result).Err()
+		if err != nil {
+			return fmt.Errorf("%s: %w", "executing closeEvent query: ", err)
+		}
+
+	} else {
+		makeABet, err := tx.Prepare(
+			"call place_a_bet($1,$2,$3,$4)",
+		)
+		if err != nil {
+			return fmt.Errorf("%s: %w", "creating makeABet query: ", err)
+		}
+		defer makeABet.Close()
+
+		err = makeABet.QueryRowContext(ctx, eventId, userId, size, result).Err()
+		if err != nil {
+			return fmt.Errorf("%s: %w", "executing makeABet query: ", err)
+		}
+
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("commit: %w", err)
+	}
+
+	return nil
+}

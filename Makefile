@@ -33,6 +33,7 @@ docker-bash:
 .PHONY: build-docker-images
 build-docker-images: build-envoy
 	docker build -f docker/go-image -t go-image:latest .
+	docker build -t ui-stavki:latest ./client
 
 .PHONY: build-envoy
 build-envoy: envoy/*

@@ -1,0 +1,8 @@
+services:
+  ui:
+    container_name: ui
+    image: ui-stavki:latest
+    build:
+      context:    ../client
+    ports:
+      - "3000:80"

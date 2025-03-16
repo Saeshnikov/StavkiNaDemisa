@@ -3,14 +3,5 @@ include:
   - compose-setup/db.yml
   - compose-setup/event.yml
   - compose-setup/user.yml
-
-  # ui:
-  #   container_name: ui
-  #   image: ui:latest
-  #   build:
-  #     context:    ./frontend/pim-sys
-  #   networks:
-  #     - common-net
-  #   ports:
-  #     - "3000:80"
+  - compose-setup/ui.yml
   

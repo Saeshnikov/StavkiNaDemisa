@@ -111,17 +111,12 @@ const EventsList = (props) => {
                             marginBottom: 1,
                             borderColor: event.closed ? '#000000' : '#000000',
                             color: event.closed ? '#000000' : '#000000',
-
                         }}
                         />
                     </Divider>
-                    <Grid container spacing={2}>
-                      <Grid item xs={7} sm={3}>
-                        <Typography variant="subtitle1" gutterBottom>
+                        <Typography sx={{ wordBreak: "break-word" }} variant="subtitle1" gutterBottom>
                           {event.name}
                         </Typography>
-                      </Grid>
-                    </Grid>
                   </StyledCard>
                   
               </Grid>

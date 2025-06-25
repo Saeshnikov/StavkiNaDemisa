@@ -2,3 +2,10 @@ INSERT into users (login,balance,password) values ('egor',100,'$2a$10$8XseJz8XOs
 INSERT into users (login,balance,password) values ('miha',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
 INSERT into users (login,balance,password) values ('artem',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
 INSERT into users (login,balance,password) values ('demis',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('azamatik',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('danilekPC',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('syfix',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('annateslenko',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('tolykan',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('tretiikovsh',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
+INSERT into users (login,balance,password) values ('mrBear',100,'$2a$10$8XseJz8XOsi2JPftDhEsoeVBcIN9vDi7OHvz9lXw.xvZ4huDp24ei');
